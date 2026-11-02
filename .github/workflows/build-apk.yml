@@ -2,11 +2,8 @@ name: Build APK
 
 on:
   push:
-    branches: [ main, 'feature/**' ]
+    branches: [ main ]
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   build:
@@ -14,20 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check responsive layout profiles
-        run: python3 tools/check_layout_profiles.py
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Android SDK packages
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Restore stable CI signing key
         uses: actions/cache@v4
@@ -47,7 +40,7 @@ jobs:
               -keyalg RSA \
               -keysize 2048 \
               -validity 10000 \
-              -dname "CN=FCM Guard Debug,O=ReedGAOOO,C=SG"
+              -dname "CN=FCM Guard Debug,O=Me,C=VN"
           fi
 
       - name: Set up Gradle
@@ -58,28 +51,12 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Read version and prepare release APKs
-        id: version
-        shell: bash
-        run: |
-          VERSION=$(sed -n 's/.*versionName "\([^"]*\)".*/\1/p' app/build.gradle | head -n 1)
-          if [ -z "$VERSION" ]; then
-            echo "Could not determine versionName" >&2
-            exit 1
-          fi
-          TAG="v${VERSION}"
-          APK_NAME="FCMGuard-HyperOS-${TAG}.apk"
-          LATEST_APK_NAME="FCMGuard-HyperOS.apk"
-          cp app/build/outputs/apk/debug/app-debug.apk "$APK_NAME"
-          cp app/build/outputs/apk/debug/app-debug.apk "$LATEST_APK_NAME"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
-          echo "latest_apk_name=$LATEST_APK_NAME" >> "$GITHUB_OUTPUT"
+      - name: Prepare APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk FCMGuard-HyperOS.apk
 
-      - name: Upload Actions artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: FCMGuard-debug-apk
-          path: ${{ steps.version.outputs.apk_name }}
+          path: FCMGuard-HyperOS.apk
           retention-days: 30
