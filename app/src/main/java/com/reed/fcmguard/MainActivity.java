@@ -683,7 +683,9 @@ public class MainActivity extends Activity {
                 R.string.auto_wake_last,
                 fmt.format(new java.util.Date(alarm)),
                 WakeScheduler.alarmCount(this),
-                service == 0L ? "-" : fmt.format(new java.util.Date(service)));
+                service == 0L ? "-" : fmt.format(new java.util.Date(service)),
+                WakeScheduler.lastActivity(this) == 0L
+                        ? "-" : fmt.format(new java.util.Date(WakeScheduler.lastActivity(this))));
     }
 
     private void appendStatusValueLine(SpannableStringBuilder out, String text, int backgroundColorRes) {

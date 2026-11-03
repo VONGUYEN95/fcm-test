@@ -26,6 +26,15 @@ public class WakeAlarmReceiver extends BroadcastReceiver {
             }
         } catch (Throwable ignored) {}
 
+        // Foreground-like path: an invisible activity (same situation as pressing the button).
+        try {
+            Intent screen = new Intent(context, WakeActivity.class);
+            screen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_NO_ANIMATION
+                    | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            context.startActivity(screen);
+        } catch (Throwable ignored) {}
+
         FcmReconnect.kick(context);
 
         try {

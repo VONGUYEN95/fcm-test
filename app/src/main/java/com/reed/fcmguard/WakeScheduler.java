@@ -19,6 +19,7 @@ public final class WakeScheduler {
     private static final String KEY_ALARM_LAST = "auto_wake_alarm_last";
     private static final String KEY_ALARM_COUNT = "auto_wake_alarm_count";
     private static final String KEY_SERVICE_LAST = "auto_wake_service_last";
+    private static final String KEY_ACTIVITY_LAST = "auto_wake_activity_last";
 
     private WakeScheduler() {}
 
@@ -40,6 +41,12 @@ public final class WakeScheduler {
         prefs(context).edit().putLong(KEY_SERVICE_LAST, System.currentTimeMillis()).apply();
     }
 
+    /** Called when the invisible WakeActivity actually started. */
+    public static void recordActivity(Context context) {
+        prefs(context).edit().putLong(KEY_ACTIVITY_LAST, System.currentTimeMillis()).apply();
+    }
+
+    public static long lastActivity(Context context) { return prefs(context).getLong(KEY_ACTIVITY_LAST, 0L); }
     public static long lastAlarm(Context context) { return prefs(context).getLong(KEY_ALARM_LAST, 0L); }
     public static long lastService(Context context) { return prefs(context).getLong(KEY_SERVICE_LAST, 0L); }
     public static int alarmCount(Context context) { return prefs(context).getInt(KEY_ALARM_COUNT, 0); }

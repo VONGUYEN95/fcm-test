@@ -11,7 +11,7 @@
     <string name="open_fcm_diag">Open FCM diagnostics</string>
     <string name="status_title">Status</string>
     <string name="auto_wake_never">Auto wake (10 min): not run yet</string>
-    <string name="auto_wake_last">Auto wake (10 min): last %1$s · %2$d runs · service %3$s</string>
+    <string name="auto_wake_last">Auto wake (10 min): last %1$s · %2$d runs · service %3$s · screen %4$s</string>
     <string name="current_value_title">Current whitelist value</string>
     <string name="language">Language</string>
     <string name="follow_system">Follow system</string>
